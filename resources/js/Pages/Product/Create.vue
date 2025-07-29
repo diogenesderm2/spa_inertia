@@ -17,6 +17,14 @@ const form = useForm({
     weight: null,
     description: '',
 })
+
+const store = () => {
+    form.post(route('products.store'), {
+        onSuccess: () => {
+            form.reset()
+        },
+    })
+}
 </script>
 
 <template>
@@ -41,7 +49,7 @@ const form = useForm({
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="flex items-center justify-center">
                     <div class="relative w-full max-w-2xl max-h-full">
-                        <form @submit.prevent="route('products.store')" class="relative bg-white rounded-lg shadow">
+                        <form @submit.prevent="store" class="relative bg-white rounded-lg shadow">
                             <div class="p-6 space-y-6">
                                 <div class="grid grid-cols-6 gap-6">
                                     <div class="cols-span-6 sm:col-span-6">
@@ -59,10 +67,10 @@ const form = useForm({
                                     <div class="col-span-6 sm:col-span-3">
                                         <label for="category_id"
                                             class="block mb-2 text-sm font-medium text-gray-900 ">Category</label>
-                                        <select name="category_id" id="category_id"
+                                        <select name="category_id" id="category_id" v-model="form.category_id"
                                             class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5">
                                             <option value="">Select a category</option>
-                                            <option>teste</option>
+                                            <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
                                         </select>
                                     </div>
                                     <div class="col-span-6 sm:col-span-3">

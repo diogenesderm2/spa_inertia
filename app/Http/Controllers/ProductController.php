@@ -37,9 +37,9 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreProductRequest $request)
     {
-        $request->user()->products()->create($request->all());
+        $request->user()->products()->create($request->validated());
 
         return redirect()->route('products.index');
     }
@@ -47,14 +47,21 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request) {}
+    public function show(Product $product) {
+        return Inertia::render('Product/Show', [
+            'product' => ProductResource::make($product),
+        ]);
+    }
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(Product $product)
     {
-        //
+        return Inertia::render('Product/Edit', [
+            'product' => ProductResource::make($product),
+            'categories' => CategoryResource::collection(Category::orderBy('name')->get()),
+        ]);
     }
 
     /**
@@ -62,7 +69,9 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request, Product $product)
     {
-        //
+        $product->update($request->validated());
+
+        return redirect()->route('products.index');
     }
 
     /**

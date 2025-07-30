@@ -2,24 +2,24 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
-defineProps({
+ const props = defineProps({
     categories: {
         type: Array,
         required: true,
     },
+    product: {
+        type: Object,
+        required: true,
+    }
 })
 
 const form = useForm({
-    name: '',
-    brand: '',
-    category_id: '',
-    price: null,
-    weight: null,
-    description: '',
+    ...props.product,
+    category_id: props.product.category.id,
 })
 
-const store = () => {
-    form.post(route('products.store'), {
+const update = () => {
+    form.put(route('products.update', form.id), {
         onSuccess: () => {
             form.reset()
         },
@@ -29,13 +29,13 @@ const store = () => {
 
 <template>
 
-    <Head title="Novo Produto" />
+    <Head title="Editar Produto" />
 
     <AuthenticatedLayout>
         <template #header>
             <div class="flex items-center justify-between">
                 <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                    Novo Produto
+                    Editar Produto
                 </h2>
 
                 <Link :href="route('products.index')"
@@ -49,7 +49,7 @@ const store = () => {
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="flex items-center justify-center">
                     <div class="relative w-full max-w-2xl max-h-full">
-                        <form @submit.prevent="store" class="relative bg-white rounded-lg shadow">
+                        <form @submit.prevent="update" class="relative bg-white rounded-lg shadow">
                             <div class="p-6 space-y-6">
                                 <div class="grid grid-cols-6 gap-6">
                                     <div class="cols-span-6 sm:col-span-6">
@@ -111,7 +111,7 @@ const store = () => {
                                     </div>
                                     <div class="col-span-6 sm:col-span-6 space-x-2">
                                         <button type="submit"
-                                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Save</button>
+                                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Update</button>
                                         <button type="button"
                                             class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5">Cancel</button>
                                     </div>

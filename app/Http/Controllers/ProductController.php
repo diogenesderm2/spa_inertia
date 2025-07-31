@@ -18,7 +18,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = auth()->user()->products()->latest()->get();
+        $products = auth()->user()->products()->latest()->paginate(2);
+
         return Inertia::render('Product/Index', [
             'products' => ProductResource::collection($products),
         ]);
@@ -42,7 +43,9 @@ class ProductController extends Controller
         dd($request->validated());
         $request->user()->products()->create($request->validated());
 
-        return redirect()->route('products.index');
+        return redirect()
+        ->route('products.index')
+        ->with('message', 'Produto criado com sucesso!');
     }
 
     /**
@@ -72,7 +75,9 @@ class ProductController extends Controller
     {
         $product->update($request->validated());
 
-        return redirect()->route('products.index');
+        return redirect()
+        ->route('products.index')
+        ->with('message', 'Produto atualizado com sucesso!');
     }
 
     /**
@@ -81,6 +86,8 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         $product->delete();
-        return back();
+       return redirect()
+        ->route('products.index')
+        ->with('message', 'Produto excluído com sucesso!');
     }
 }

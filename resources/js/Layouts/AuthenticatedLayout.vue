@@ -5,7 +5,13 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage, router } from '@inertiajs/vue3';
+import Toast from '@/Components/toast/Toast.vue';
+
+const showingToast = ref(false);
+router.on('finish', () => {
+    showingToast.value = !!usePage().props.toast.message;
+})
 
 const showingNavigationDropdown = ref(false);
 </script>
@@ -205,8 +211,18 @@ const showingNavigationDropdown = ref(false);
 
             <!-- Page Content -->
             <main>
+                <div v-if="$page.props.toast.message" >
+                    {{ $page.props.toast.message }}
+                </div>
                 <slot />
             </main>
         </div>
+        <Toast
+        :message="$page.props.toast.message"
+        :show="showingToast"
+        @hide="showingToast = false"
+        type="success"
+        position="bottom-right"
+        />
     </div>
 </template>

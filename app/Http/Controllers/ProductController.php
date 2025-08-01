@@ -18,10 +18,33 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = auth()->user()->products()->latest()->paginate(2);
+        $products = auth()->user()
+            ->products()
+
+            ->with('category')
+            ->where(function ($query) {
+                if ($search = request()->search) {
+                    $query->where('name', 'like', '%' . $search . '%')
+                        ->orWhereHas('category', function ($query) use ($search) {
+                            $query->where('name', 'like', '%' . $search . '%');
+                        });
+                }
+            })
+            ->when(!request()->query('sort_by'), function ($query) {
+                $query->latest();
+            })
+            ->when(request()->query('sort_by'), function ($query) {
+                $sortBy = request()->query('sort_by');
+                $field = ltrim($sortBy, '-');
+                $direction =  substr($sortBy, 0, 1) === '-' ? 'desc' : 'asc';
+                $query->orderBy($field, $direction);
+            })
+            ->paginate(12)
+            ->withQueryString();
 
         return Inertia::render('Product/Index', [
             'products' => ProductResource::collection($products),
+            'query' => (object) request()->query(),
         ]);
     }
 
@@ -44,14 +67,15 @@ class ProductController extends Controller
         $request->user()->products()->create($request->validated());
 
         return redirect()
-        ->route('products.index')
-        ->with('message', 'Produto criado com sucesso!');
+            ->route('products.index')
+            ->with('message', 'Produto criado com sucesso!');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Product $product) {
+    public function show(Product $product)
+    {
         return Inertia::render('Product/Show', [
             'product' => ProductResource::make($product),
         ]);
@@ -76,8 +100,8 @@ class ProductController extends Controller
         $product->update($request->validated());
 
         return redirect()
-        ->route('products.index')
-        ->with('message', 'Produto atualizado com sucesso!');
+            ->route('products.index')
+            ->with('message', 'Produto atualizado com sucesso!');
     }
 
     /**
@@ -86,8 +110,8 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         $product->delete();
-       return redirect()
-        ->route('products.index')
-        ->with('message', 'Produto excluído com sucesso!');
+        return redirect()
+            ->route('products.index')
+            ->with('message', 'Produto excluído com sucesso!');
     }
 }

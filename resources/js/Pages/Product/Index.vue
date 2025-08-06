@@ -1,9 +1,11 @@
 <script setup>
+import { ref } from 'vue';
 import Pagination from '@/Components/Pagination.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import Sortable from '@/Components/Sortable.vue';
-
+import Checkbox from '@/Components/Checkbox.vue';
+import CheckAll from '@/Components/CheckAll.vue';
 
 const props = defineProps({
     products: {
@@ -32,6 +34,8 @@ const handleSearch = (event) => {
     search: event.target.value,
    })
 }
+const selectedIds = ref([]);
+
 </script>
 
 <template>
@@ -46,7 +50,7 @@ const handleSearch = (event) => {
                 </h2>
                 <Link :href="route('products.create')"
                     class="px-3 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-md hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 focus:outline-none">
-                + Adicionar Produto</Link>
+                + Adicionar Produto </Link>
             </div>
 
         </template>
@@ -75,6 +79,9 @@ const handleSearch = (event) => {
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b">
                             <tr>
                                 <th scope="col" class="px-6 py-3">
+                                    <CheckAll :rows="products.data" v-model:modelValue="selectedIds" />
+                                </th>
+                                <th scope="col" class="px-6 py-3">
                                     N°
                                 </th>
                                 <th scope="col" class="px-6 py-3">
@@ -98,10 +105,13 @@ const handleSearch = (event) => {
                             <tr v-for="(product, index) in products.data" :key="product.id"
                                 class="bg-white border-b hover:bg-gray-50">
                                 <td class="px-6 py-4">
-                                    {{ products.meta.from + index }}
+                                    <Checkbox :value="product.id" v-model:checked="selectedIds" />
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{ products.meta.from + index }} 
                                 </td>
                                 <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                    {{ product.name }}
+                                    {{ product.name }} {{ selectedIds }}
                                 </th>
                                 <td class="px-6 py-4">
                                     {{ product.category.name }}

@@ -222,7 +222,7 @@ const showingNavigationDropdown = ref(false);
         :show="showingToast"
         @hide="showingToast = false"
         type="success"
-        position="bottom-right"
+        position="top-right"
         />
     </div>
 </template>
